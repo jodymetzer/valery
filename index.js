@@ -3,12 +3,9 @@ var app = express();
 var path = require('path');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var zerorpc = require("zerorpc");
-var client = new zerorpc.Client();
+var PythonShell = require('python-shell');
 
 app.use(express.static('public'))
-
-var PythonShell = require('python-shell');
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -23,29 +20,25 @@ http.listen(3000, function(){
 });
 
 io.on('connection', function(socket){
-  socket.on('reset', function(res){
-    console.log('reset? ' + res);
+  socket.on('speed', function(msg){
+    console.log('speed: ' + msg);
+    
+
+    var options = {
+        mode: 'text',
+        args: ['--option=' + msg]
+    };
+
+    PythonShell.run('child.py', options, function (err, results) {
+        if (err) throw err;
+        // results is an array consisting of messages collected during execution
+        console.log('results: %j', results);
+    });
   });
 });
 
 io.on('connection', function(socket){
-  socket.on('speed', function(msg){
-    var options = {
-      mode: 'text',
-      args: [msg]
-    };
-    PythonShell.run('child.py', options, function (err, results) {
-      if (err) throw err;
-      
-      console.log('results: %j', results);
-    });
-    console.log('speed: ' + msg);
+  socket.on('reset', function(msg){
+    console.log('reset? ' + msg);
   });
-});
-
-
-client.connect("tcp://0.0.0.0:4242");
-
-client.invoke("hello", "World!", function(error, res, more) {
-    console.log(res);
 });
