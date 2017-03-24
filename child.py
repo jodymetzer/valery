@@ -1,12 +1,8 @@
 import sys
-import zerorpc
+from socketIO_client import SocketIO, LoggingNamespace
 
 print "\n".join(sys.argv)
 
-class HelloRPC(object):
-    def hello(self, name):
-        return "Hello, %s" % name
-
-s = zerorpc.Server(HelloRPC())
-s.bind("tcp://0.0.0.0:4242")
-s.run()
+with SocketIO('localhost', 3333) as socketIO:
+    socketIO.emit('bbb')
+    socketIO.wait_for_callbacks(seconds=1)

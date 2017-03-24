@@ -3,8 +3,6 @@ var app = express();
 var path = require('path');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var zerorpc = require("zerorpc");
-var client = new zerorpc.Client();
 
 app.use(express.static('public'))
 
@@ -44,8 +42,3 @@ io.on('connection', function(socket){
 });
 
 
-client.connect("tcp://0.0.0.0:4242");
-
-client.invoke("hello", "World!", function(error, res, more) {
-    console.log(res);
-});

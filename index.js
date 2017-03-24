@@ -19,6 +19,15 @@ http.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
+io.listen(3333);
+
+io.on("connection",function(socket){
+    socket.on("bbb",function(data){
+        data = JSON.parse(data);
+ 
+        console.log(data);
+});
+
 io.on('connection', function(socket){
   socket.on('speed', function(msg){
     console.log('speed: ' + msg);
